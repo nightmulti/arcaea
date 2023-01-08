@@ -48,7 +48,7 @@ class PackRestController constructor(var packMapper: PackMapper) {
             onJsonReturn("204", "\"information\": \"insert failure\"")
         } else {
             val upsilon =
-                "\"pack\": {\"id\": $id,\"platform\": \"$platform\",\"cover\": \"/cdn/pack/$id/$cover\",\"title\": \"$title\",\"type\": \"$type\",\"count\": $count,\"date\": $date,\"cost\": $cost}"
+                "\"pack\": {\"id\": $id,\"platform\": $platform,\"cover\": $cover,\"title\": \"$title\",\"type\": $type,\"count\": $count,\"date\": $date,\"cost\": $cost}"
 
             onJsonReturn("200", upsilon)
 
