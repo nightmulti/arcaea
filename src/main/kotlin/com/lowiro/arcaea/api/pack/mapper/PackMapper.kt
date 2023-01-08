@@ -1,5 +1,6 @@
 package com.lowiro.arcaea.api.pack.mapper
 
+import com.alibaba.fastjson.JSONObject
 import org.apache.ibatis.annotations.*
 
 @Mapper
@@ -16,5 +17,8 @@ interface PackMapper {
         @Param(value = "date") date: String,
         @Param(value = "cost") cost: String
     ): Int
+
+    @Select("SELECT * FROM `pack` WHERE id = #{id}")
+    fun packSelect(@Param(value = "id") id: Int): JSONObject
 
 }
