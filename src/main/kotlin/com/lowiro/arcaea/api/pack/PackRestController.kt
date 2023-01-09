@@ -14,7 +14,7 @@ class PackRestController constructor(var packMapper: PackMapper) {
 
         val pack: JSONObject = packMapper.packSelect(id)
 
-        if (pack.isEmpty()) {
+        if (pack == null) {
             return onJsonReturn("204", "\"information\": \"select failure\"")
         }
 
