@@ -21,13 +21,24 @@ class PackRestController constructor(val packMapper: PackMapper) {
     @PostMapping(value = ["/admin/insert"])
     fun insert(@RequestBody requestBody: JSONObject): String {
         val data = requestBody.getJSONArray("data")
-        data[0] ?: return omicron("required: '0'")
-        data[1] ?: return omicron("required: '1'")
-        data[2] ?: return omicron("required: '2'")
-        data[3] ?: return omicron("required: '3'")
-        data[4] ?: return omicron("required: '4'")
-        data[5] ?: return omicron("required: '5'")
-        data[6] ?: return omicron("required: '6'")
+        var message = "required: '平台'"
+        try {
+            data[0]
+            message = "required: '曲包封面'"
+            data[1]
+            message = "required: '曲包名称'"
+            data[2]
+            message = "required: '曲包类型'"
+            data[3]
+            message = "required: '内含曲目数量'"
+            data[4]
+            message = "required: '上线时间'"
+            data[5]
+            message = "required: '花费'"
+            data[6]
+        } catch (exception: Exception) {
+            return omicron(message)
+        }
         return if (packMapper.packInsert(packMapper.packIdSelect() + 1, data.toString()) == 0) {
             omicron("insert failure")
         } else {
