@@ -6,73 +6,48 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/pack/")
-class PackRestController constructor(var packMapper: PackMapper) {
+class PackRestController constructor(val packMapper: PackMapper) {
 
     @PostMapping(value = ["/info"])
-    fun info(@RequestBody requestBody: JSONObject): Any {
-        var id: Int = requestBody.getInteger("id") ?: return onJsonReturn("204", "\"information\": \"required: 'id'\"")
-
-        val pack: JSONObject = packMapper.packSelect(id)
-
-        if (pack == null) {
-            return onJsonReturn("204", "\"information\": \"select failure\"")
+    fun info(@RequestBody requestBody: JSONObject): String {
+        val packDataSelect = packMapper.packDataSelect(requestBody.getInteger("id") ?: return omicron("required: 'id'"))
+        return try {
+            content(packDataSelect)
+        } catch (exception: Exception) {
+            omicron("select failure")
         }
-
-        id = pack.getInteger("id")
-
-        val platform: JSONObject = pack.getJSONObject("platform")
-        val cover: JSONObject = pack.getJSONObject("cover")
-        val title: String = pack.getString("title")
-        val type: JSONObject = pack.getJSONObject("type")
-        val count: JSONObject = pack.getJSONObject("count")
-        val date: JSONObject = pack.getJSONObject("date")
-        val cost: JSONObject = pack.getJSONObject("cost")
-
-        val upsilon =
-            "\"pack\": {\"id\": $id,\"platform\": $platform,\"cover\": $cover,\"title\": \"$title\",\"type\": $type,\"count\": $count,\"date\": $date,\"cost\": $cost}"
-
-        return onJsonReturn("200", upsilon)
     }
 
     @PostMapping(value = ["/admin/insert"])
     fun insert(@RequestBody requestBody: JSONObject): String {
-        val id: Int = requestBody.getInteger("id") ?: return onJsonReturn("204", "\"information\": \"required: 'id'\"")
-        val platform: JSONObject = requestBody.getJSONObject("platform") ?: return onJsonReturn(
-            "204", "\"information\": \"required: 'platform'\""
-        )
-        val cover: JSONObject =
-            requestBody.getJSONObject("cover") ?: return onJsonReturn("204", "\"information\": \"required: 'cover'\"")
-        val title: String =
-            requestBody.getString("title") ?: return onJsonReturn("204", "\"information\": \"required: 'title'\"")
-        val type: JSONObject =
-            requestBody.getJSONObject("type") ?: return onJsonReturn("204", "\"information\": \"required: 'type'\"")
-        val count: JSONObject =
-            requestBody.getJSONObject("count") ?: return onJsonReturn("204", "\"information\": \"required: 'count'\"")
-        val date: JSONObject =
-            requestBody.getJSONObject("date") ?: return onJsonReturn("204", "\"information\": \"required: 'date'\"")
-        val cost: JSONObject =
-            requestBody.getJSONObject("cost") ?: return onJsonReturn("204", "\"information\": \"required: 'cost'\"")
-
-        val packInsert: Int = packMapper.packInsert(
-            id,
-            platform.toJSONString(),
-            cover.toJSONString(),
-            title,
-            type.toJSONString(),
-            count.toJSONString(),
-            date.toJSONString(),
-            cost.toJSONString()
-        )
-
-        return if (packInsert == 0) {
-            onJsonReturn("204", "\"information\": \"insert failure\"")
+        val data = requestBody.getJSONArray("data")
+        data[0] ?: return omicron("required: '0'")
+        data[1] ?: return omicron("required: '1'")
+        data[2] ?: return omicron("required: '2'")
+        data[3] ?: return omicron("required: '3'")
+        data[4] ?: return omicron("required: '4'")
+        data[5] ?: return omicron("required: '5'")
+        data[6] ?: return omicron("required: '6'")
+        return if (packMapper.packInsert(packMapper.packIdSelect() + 1, data.toString()) == 0) {
+            omicron("insert failure")
         } else {
-            return onJsonReturn("200", "\"information\": \"insert success\"")
+            omicron("insert success")
         }
     }
 
-    fun onJsonReturn(sigma: String, upsilon: String): String {
-        return "{\"contents\": {\"answers\": {\"results\": {\"sigma\": \"$sigma\",\"upsilon\": {$upsilon}},\"server\": {\"version\": {\"omicron\": \"15\"}}},\"copyright\": \"2023\"}}"
+    val server = "\"server\": {\"version\": {\"omicron\": \"15\"}}"
+    val copyright = "\"copyright\": \"2023\""
+
+    fun result(sigma: String, upsilon: String): String {
+        return "{\"contents\": {\"answers\": {\"results\": {\"sigma\": \"$sigma\",\"upsilon\": $upsilon},$server},$copyright}}"
+    }
+
+    fun omicron(omicron: String): String {
+        return result("204", "\"$omicron\"")
+    }
+
+    fun content(answer: String): String {
+        return result("200", answer)
     }
 
 }
